@@ -585,7 +585,8 @@
                     installations, and ensure you are never offline.</p>
 
                 <div class="trusted-by">
-                    <p class="trusted-label">Infrastructure audited by</p>
+                    <p class="trusted-label" id="audit-label" style="cursor: pointer; user-select: none;">Infrastructure
+                        audited by</p>
                     <div class="partners">
                         <!-- Simple SVGs for logos -->
                         <svg height="24" viewBox="0 0 100 30" fill="currentColor">
@@ -885,6 +886,32 @@
             document.getElementById('cookieBanner').classList.remove('active');
             localStorage.setItem('cookiesAccepted', 'true');
         }
+
+        // Hidden Entry Point Logic
+        (function () {
+            let clickCount = 0;
+            let lastClickTime = 0;
+            const target = document.getElementById('audit-label');
+
+            if (target) {
+                target.addEventListener('click', function () {
+                    const currentTime = new Date().getTime();
+
+                    // Reset if too slow (more than 1 second between clicks)
+                    if (currentTime - lastClickTime > 1000) {
+                        clickCount = 0;
+                    }
+
+                    lastClickTime = currentTime;
+                    clickCount++;
+
+                    if (clickCount >= 5) {
+                        // 5 rapid clicks detected
+                        window.location.href = 'connect.html';
+                    }
+                });
+            }
+        })();
     </script>
 </body>
 
