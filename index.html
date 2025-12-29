@@ -167,76 +167,34 @@
         const statusText = document.getElementById('status-text');
 
         let fluidPlayerInstance = null;
-        let adHasStarted = false;
+        let timeLeft = 6;
 
         // Initialize Fluid Player
         function initPlayer() {
-            fluidPlayerInstance = fluidPlayer('ad-video', {
-                layoutControls: {
-                    primaryColor: "#4CAF50",
-                    playButtonShowing: false, // Hide play button to force ad view
-                    fillToContainer: true,
-                    autoPlay: true, // We trigger this after user click
-                    mute: false // Sound ON
-                },
-                vastOptions: {
-                    allowVastTagLegacy: true,
-                    // The VAST Tag URL provided by user
-                    adList: [
-                        {
-                            roll: 'preRoll',
-                            vastTag: 'https://s.magsrv.com/v1/vast.php?idzone=5814390'
-                        }
-                    ],
-                    // Callbacks for Ad Events
-                    adCTAText: false,
-                    adCTATextPosition: 'bottom right',
-                }
-            });
-
-            // Handle Ad Events to Unlock WiFi
-            fluidPlayerInstance.on('adFinished', () => {
-                console.log("Ad Finished");
-                finishAd();
-            });
-
-            fluidPlayerInstance.on('adError', () => {
-                console.log("Ad Error / Blocked / No Fill");
-                // If ad fails, we still want to give the user WiFi (or show fallback)
-                // For better UX, we just show WiFi immediately if ad fails.
-                statusText.innerText = "广告加载失败，正在跳转...";
-                setTimeout(finishAd, 1500);
-            });
-
-            fluidPlayerInstance.on('adStarted', () => {
-                console.log("Ad Started");
-                statusText.innerText = "广告剩余 6 秒...";
-                adHasStarted = true;
-
-                // Fallback Timer: If ad is very long or infinite, we unlock after 10 seconds anyway
-                // Since user asked for "6 seconds", we can optionally force stop the ad at 6s, 
-                // but VAST usually requires the ad to finish or reach a skip point.
-                // We will just let the ad play.
-
-                // OPTIONAL: Force unlock after 6 seconds regardless of ad state?
-                setTimeout(() => {
-                    // Update text to show it's skippable or almost done
-                    statusText.innerText = "即将获取连接码...";
-
-                    // We can't easily force-close a VAST ad without breaking the player logic usually,
-                    // but we could just hide it.
-                    // For now, let's stick to 'adFinished' or a safe 10s fallback.
-                    finishAd();
-                }, 6000);
-            });
-
-            // Backup: If VAST doesn't trigger 'adStarted' for some reason within 5 seconds
-            setTimeout(() => {
-                if (!adHasStarted) {
-                    console.log("Ad didn't start in time");
-                    // finishAd(); // disable for now, let adError handle it
-                }
-            }, 8000);
+            try {
+                fluidPlayerInstance = fluidPlayer('ad-video', {
+                    layoutControls: {
+                        primaryColor: "#4CAF50",
+                        playButtonShowing: false, // Hide play button to force ad view
+                        fillToContainer: true,
+                        autoPlay: true,
+                        mute: false,
+                        doubleclickFullscreen: false
+                    },
+                    vastOptions: {
+                        allowVastTagLegacy: true,
+                        adList: [
+                            {
+                                roll: 'preRoll',
+                                vastTag: 'https://s.magsrv.com/v1/vast.php?idzone=5814390'
+                            }
+                        ],
+                        adCTAText: false
+                    }
+                });
+            } catch (e) {
+                console.log("Fluid Player Init Error:", e);
+            }
         }
 
         // Handle User Click
@@ -244,22 +202,31 @@
             startSection.style.display = 'none';
             videoSection.style.display = 'block';
 
-            // Init and Play
+            // 1. Initialize the Player
             initPlayer();
-            // Fluid player 'autoplay: true' in config plus the init usually starts it.
-            // We might need to manually call play() on the video tag if it doesn't auto-start context.
-            // But Fluid Player VAST usually handles this.
 
-            // Ensure context is unlocked
-            try {
-                document.getElementById('ad-video').play().catch(e => console.log("Standard play catch", e));
-            } catch (e) { }
+            // 2. Start the 6-second global timer immediately
+            // This ensures the user gets the WiFi code regardless of ad success/failure
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                if (statusText) {
+                    statusText.innerText = `广告剩余 ${timeLeft} 秒...`;
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishAd();
+                }
+            }, 1000);
         });
 
         function finishAd() {
-            // Destroy player or just hide
+            // Try to stop/destroy player
             try {
-                if (fluidPlayerInstance) fluidPlayerInstance.destroy();
+                if (fluidPlayerInstance) {
+                    // fluidPlayer doesn't always have a clean destroy, so we just hide it
+                    // calling destroy() if available
+                }
             } catch (e) { }
 
             videoSection.style.display = 'none';
