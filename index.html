@@ -9,11 +9,18 @@
         content="Sec-CH-UA https://s.magsrv.com; Sec-CH-UA-Mobile https://s.magsrv.com; Sec-CH-UA-Arch https://s.magsrv.com; Sec-CH-UA-Model https://s.magsrv.com; Sec-CH-UA-Platform https://s.magsrv.com; Sec-CH-UA-Platform-Version https://s.magsrv.com; Sec-CH-UA-Bitness https://s.magsrv.com; Sec-CH-UA-Full-Version-List https://s.magsrv.com; Sec-CH-UA-Full-Version https://s.magsrv.com;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connecting to Wi-Fi...</title>
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23000'/%3E%3Ccircle cx='8' cy='8' r='5' fill='%234CAF50'/%3E%3C/svg%3E">
 
     <!-- Fluid Player SDK -->
     <script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
 
     <style>
+        html,
+        body {
+            height: 100%;
+        }
+
         body {
             background-color: #121212;
             color: #ffffff;
@@ -22,7 +29,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
+            height: 100%;
             margin: 0;
             text-align: center;
             padding: 20px;
@@ -35,6 +43,20 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             max-width: 400px;
             width: 100%;
+        }
+
+        body.ad-fullscreen {
+            padding: 0;
+        }
+
+        body.ad-fullscreen .container {
+            width: 100%;
+            max-width: none;
+            height: 100%;
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
+            background: #000;
         }
 
         h2 {
@@ -66,6 +88,66 @@
             100% {
                 transform: rotate(360deg);
             }
+        }
+
+        #video-section {
+            display: none;
+            width: 100%;
+            position: relative;
+        }
+
+        body.ad-fullscreen #video-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        body.ad-fullscreen #status-text {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 10;
+            margin: 0;
+            padding: 6px 10px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .video-wrap {
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            position: relative;
+            background-color: #000;
+        }
+
+        #status-text {
+            color: #4CAF50;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        body.ad-fullscreen .video-wrap {
+            height: 100%;
+            padding-bottom: 0;
+        }
+
+        #ad-video {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: #000;
+            object-fit: contain;
+        }
+
+        body.ad-fullscreen .fluid_video_wrapper {
+            width: 100% !important;
+            height: 100% !important;
         }
 
         #wifi-section {
@@ -129,12 +211,12 @@
         </div>
 
         <!-- 2. Video Player for VAST Ad -->
-        <div id="video-section" style="display: none; width: 100%;">
-            <p id="status-text" style="color: #4CAF50; font-weight: bold; margin-bottom: 10px;">Loading Ad...</p>
+        <div id="video-section">
+            <p id="status-text">Loading Ad...</p>
 
-            <div style="width: 100%; height: 0; padding-bottom: 56.25%; position: relative; background-color: #000;">
-                <video id="ad-video" style="width: 100%; height: 100%; position: absolute; top:0; left:0;" playsinline
-                    webkit-playsinline poster="https://via.placeholder.com/640x360.png?text=Loading+Ad...">
+            <div class="video-wrap">
+                <video id="ad-video" playsinline webkit-playsinline
+                    poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 360'%3E%3Crect width='640' height='360' fill='%23000'/%3E%3Ctext x='50%25' y='50%25' fill='%23fff' font-size='28' text-anchor='middle' dominant-baseline='middle'%3ELoading%20Ad...%3C/text%3E%3C/svg%3E">
                     <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
                         type="video/mp4" />
                 </video>
@@ -166,12 +248,94 @@
         const wifiSection = document.getElementById('wifi-section');
         const startBtn = document.getElementById('start-btn');
         const statusText = document.getElementById('status-text');
+        const adVideo = document.getElementById('ad-video');
 
         let fluidPlayerInstance = null;
         let timeLeft = 6;
+        let fallbackTimer = null;
+
+        function setStatus(message) {
+            if (statusText) {
+                statusText.innerText = message;
+            }
+        }
+
+        function tryEnterFullscreen() {
+            if (videoSection.requestFullscreen) {
+                videoSection.requestFullscreen().catch(() => { });
+                return;
+            }
+            if (videoSection.webkitRequestFullscreen) {
+                videoSection.webkitRequestFullscreen();
+                return;
+            }
+            if (adVideo && adVideo.webkitEnterFullscreen) {
+                adVideo.webkitEnterFullscreen();
+            }
+        }
+
+        function exitFullscreen() {
+            if (document.fullscreenElement && document.exitFullscreen) {
+                document.exitFullscreen().catch(() => { });
+            } else if (document.webkitFullscreenElement && document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        }
+
+        function clearFallbackTimer() {
+            if (fallbackTimer) {
+                clearTimeout(fallbackTimer);
+                fallbackTimer = null;
+            }
+        }
+
+        function playFallbackVideo(reason) {
+            if (!adVideo) {
+                return;
+            }
+            if (reason) {
+                setStatus(reason);
+            }
+            adVideo.muted = true;
+            adVideo.controls = true;
+            const playPromise = adVideo.play();
+            if (playPromise && typeof playPromise.catch === 'function') {
+                playPromise.catch(() => { });
+            }
+        }
+
+        function scheduleFallbackPlayback() {
+            clearFallbackTimer();
+            fallbackTimer = setTimeout(() => {
+                if (!adVideo) {
+                    setStatus('Ad failed to load.');
+                    return;
+                }
+                const noPlayback = adVideo.readyState === 0 || adVideo.paused || adVideo.currentTime === 0;
+                if (noPlayback) {
+                    playFallbackVideo('Ad failed to load. Playing fallback video...');
+                }
+            }, 3000);
+        }
+
+        function bindPlayerEvents(instance) {
+            if (!instance || typeof instance.on !== 'function') {
+                return;
+            }
+            instance.on('vast.error', () => {
+                playFallbackVideo('Ad failed to load. Playing fallback video...');
+            });
+            instance.on('vast.noad', () => {
+                playFallbackVideo('No ad available. Playing fallback video...');
+            });
+        }
 
         // Initialize Fluid Player
         function initPlayer() {
+            if (typeof fluidPlayer !== 'function') {
+                playFallbackVideo('Ad player failed to load. Playing fallback video...');
+                return;
+            }
             try {
                 fluidPlayerInstance = fluidPlayer('ad-video', {
                     layoutControls: {
@@ -193,26 +357,37 @@
                         adCTAText: false
                     }
                 });
+                bindPlayerEvents(fluidPlayerInstance);
             } catch (e) {
                 console.log("Fluid Player Init Error:", e);
+                playFallbackVideo('Ad player failed to load. Playing fallback video...');
             }
+        }
+
+        if (adVideo) {
+            adVideo.addEventListener('playing', () => {
+                clearFallbackTimer();
+            });
+            adVideo.addEventListener('error', () => {
+                setStatus('Video failed to load.');
+            });
         }
 
         // Handle User Click
         startBtn.addEventListener('click', function () {
             startSection.style.display = 'none';
-            videoSection.style.display = 'block';
+            document.body.classList.add('ad-fullscreen');
+            tryEnterFullscreen();
 
             // 1. Initialize the Player
             initPlayer();
+            scheduleFallbackPlayback();
 
             // 2. Start the 6-second global timer immediately
             // This ensures the user gets the WiFi code regardless of ad success/failure
             const timerInterval = setInterval(() => {
                 timeLeft--;
-                if (statusText) {
-                    statusText.innerText = `Ad remaining: ${timeLeft}s...`;
-                }
+                setStatus(`Ad remaining: ${timeLeft}s...`);
 
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
@@ -230,8 +405,9 @@
                 }
             } catch (e) { }
 
-            videoSection.style.display = 'none';
             wifiSection.style.display = 'block';
+            document.body.classList.remove('ad-fullscreen');
+            exitFullscreen();
         }
     </script>
 </body>
