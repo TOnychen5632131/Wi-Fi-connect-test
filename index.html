@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正在连接 WiFi...</title>
+    <style>
+        body {
+            background-color: #121212;
+            /* 深色背景，护眼且显得高端 */
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #4CAF50;
+        }
+
+        p {
+            color: #aaaaaa;
+            margin-bottom: 20px;
+        }
+
+        /* 加载动画 */
+        .loader {
+            border: 5px solid #333;
+            border-top: 5px solid #4CAF50;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 初始隐藏 WiFi 区域 */
+        #wifi-section {
+            display: none;
+            /* 一开始不显示，等脚本运行一会再显示 */
+            animation: fadeIn 1s;
+        }
+
+        /* 二维码样式 */
+        .qr-image {
+            width: 100%;
+            max-width: 250px;
+            border-radius: 10px;
+            border: 5px solid white;
+            margin-bottom: 10px;
+            /* 关键：允许用户长按图片 */
+            -webkit-touch-callout: default;
+            pointer-events: auto;
+        }
+
+        .hint {
+            font-size: 14px;
+            color: #888;
+            margin-top: 10px;
+            background: #2c2c2c;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div id="loading-section">
+            <div class="loader"></div>
+            <h3>正在建立安全连接...</h3>
+            <p>请稍候，正在解析赞助商内容</p>
+        </div>
+
+        <div id="wifi-section">
+            <h2>✅ 连接也就绪</h2>
+            <p>长按下方二维码加入网络</p>
+
+            <img src="https://api.qrserver.com/v1/create-qr-code/?data=WIFI:S:awesome%20speed;T:WPA;P:arjunreddy;;&size=400x400"
+                alt="WiFi QR Code" class="qr-image">
+
+            <div class="hint">
+                👆 <strong>长按图片</strong> 选择 "加入网络" / "Join Network"<br>
+                或者 "使用 Google Lens"
+            </div>
+
+            <p style="font-size:12px; margin-top:15px; color:#555;">SSID: awesome speed | PW: arjunreddy</p>
+        </div>
+
+    </div>
+
+    <script src="https://pl28355018.effectivegatecpm.com/0c/57/30/0c57307a09d044e942cd2b8949dce623.js"></script>
+
+    <script>
+        // 核心逻辑：
+        // 因为广告脚本没有“播放完成”的回调，我们使用定时器模拟。
+        // 设置 3000 毫秒（3秒），给广告脚本一点运行时间，然后显示 WiFi。
+
+        setTimeout(function () {
+            // 1. 隐藏加载圈
+            document.getElementById('loading-section').style.display = 'none';
+
+            // 2. 显示 WiFi 二维码区域
+            document.getElementById('wifi-section').style.display = 'block';
+
+        }, 3000); // 你可以把 3000 改成 5000（5秒）或更长
+    </script>
+
+</body>
+
+</html>
