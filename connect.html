@@ -184,6 +184,13 @@
             backdrop-filter: blur(6px);
             pointer-events: auto;
             align-self: flex-start;
+            margin-top: 60px;
+            /* Push down below the close button area if needed, or keep it. */
+            /* Actually, user said button put here is fine. Let's make status text sit in the same spot but let button cover it when active, or move status text slightly. 
+               Let's move status text to the center top instead to avoid conflict. */
+            align-self: center;
+            top: 16px;
+            position: absolute;
         }
 
         #close-ad-btn {
@@ -201,7 +208,12 @@
             transform: translateY(10px);
             transition: opacity 0.25s ease, transform 0.25s ease;
             pointer-events: none;
-            align-self: flex-end;
+            align-self: flex-start;
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            z-index: 60;
+            margin: 0;
         }
 
         #close-ad-btn:focus-visible {
@@ -252,6 +264,7 @@
         }
 
         @keyframes qrPulse {
+
             0%,
             100% {
                 transform: scale(1);
