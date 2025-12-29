@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     <meta http-equiv="Delegate-CH"
         content="Sec-CH-UA https://s.magsrv.com; Sec-CH-UA-Mobile https://s.magsrv.com; Sec-CH-UA-Arch https://s.magsrv.com; Sec-CH-UA-Model https://s.magsrv.com; Sec-CH-UA-Platform https://s.magsrv.com; Sec-CH-UA-Platform-Version https://s.magsrv.com; Sec-CH-UA-Bitness https://s.magsrv.com; Sec-CH-UA-Full-Version-List https://s.magsrv.com; Sec-CH-UA-Full-Version https://s.magsrv.com;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>正在连接 WiFi...</title>
+    <title>Connecting to Wi-Fi...</title>
 
     <!-- Fluid Player SDK -->
     <script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
@@ -47,7 +47,7 @@
             margin-bottom: 20px;
         }
 
-        /* 加载动画 */
+        /* Loading Animation */
         .loader {
             border: 5px solid #333;
             border-top: 5px solid #4CAF50;
@@ -110,8 +110,8 @@
 
         <!-- 1. Start Screen -->
         <div id="start-section">
-            <h2 style="color: #4CAF50;">🎉 免费 WiFi 已就绪</h2>
-            <p>观看简短广告即可获取密码</p>
+            <h2 style="color: #4CAF50;">🎉 Free Wi-Fi Ready</h2>
+            <p>Watch a short ad to get the password</p>
             <button id="start-btn" style="
                 background: #4CAF50;
                 color: white;
@@ -125,12 +125,12 @@
                 cursor: pointer;
                 border-radius: 8px;
                 font-weight: bold;
-            ">点击获取 WiFi</button>
+            ">Get Free Wi-Fi</button>
         </div>
 
         <!-- 2. Video Player for VAST Ad -->
         <div id="video-section" style="display: none; width: 100%;">
-            <p id="status-text" style="color: #4CAF50; font-weight: bold; margin-bottom: 10px;">正在加载广告...</p>
+            <p id="status-text" style="color: #4CAF50; font-weight: bold; margin-bottom: 10px;">Loading Ad...</p>
 
             <div style="width: 100%; height: 0; padding-bottom: 56.25%; position: relative; background-color: #000;">
                 <video id="ad-video" style="width: 100%; height: 100%; position: absolute; top:0; left:0;" playsinline
@@ -143,15 +143,15 @@
 
         <!-- 3. WiFi QR Code Screen -->
         <div id="wifi-section">
-            <h2>✅ 连接也就绪</h2>
-            <p>长按下方二维码加入网络</p>
+            <h2>✅ Connection Ready</h2>
+            <p>Long press the QR code below to join</p>
 
             <img src="https://api.qrserver.com/v1/create-qr-code/?data=WIFI:S:awesome%20speed;T:WPA;P:arjunreddy;;&size=400x400"
                 alt="WiFi QR Code" class="qr-image">
 
             <div class="hint">
-                👆 <strong>长按图片</strong> 选择 "加入网络" / "Join Network"<br>
-                或者 "使用 Google Lens"
+                👆 <strong>Long Press</strong> to select "Join Network"<br>
+                or use "Google Lens"
             </div>
 
             <p style="font-size:12px; margin-top:15px; color:#555;">SSID: awesome speed | PW: arjunreddy</p>
@@ -211,7 +211,7 @@
             const timerInterval = setInterval(() => {
                 timeLeft--;
                 if (statusText) {
-                    statusText.innerText = `广告剩余 ${timeLeft} 秒...`;
+                    statusText.innerText = `Ad remaining: ${timeLeft}s...`;
                 }
 
                 if (timeLeft <= 0) {
