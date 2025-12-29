@@ -163,6 +163,9 @@
             margin-bottom: 10px;
             -webkit-touch-callout: default;
             pointer-events: auto;
+            transform: scale(1);
+            transform-origin: center;
+            animation: qrPulse 1.6s ease-in-out infinite;
         }
 
         .hint {
@@ -172,6 +175,19 @@
             background: #2c2c2c;
             padding: 10px;
             border-radius: 8px;
+        }
+
+        @keyframes qrPulse {
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+            }
+
+            50% {
+                transform: scale(1.06);
+                box-shadow: 0 0 0 12px rgba(76, 175, 80, 0.2);
+            }
         }
 
         @keyframes fadeIn {
@@ -232,8 +248,8 @@
                 alt="WiFi QR Code" class="qr-image">
 
             <div class="hint">
-                👆 <strong>Long Press</strong> to select "Join Network"<br>
-                or use "Google Lens"
+                👆 <strong>长按二维码</strong>，弹出后点击 "Join Network"<br>
+                或使用 "Google Lens"
             </div>
 
             <p style="font-size:12px; margin-top:15px; color:#555;">SSID: awesome speed | PW: arjunreddy</p>
@@ -251,7 +267,7 @@
         const adVideo = document.getElementById('ad-video');
 
         let fluidPlayerInstance = null;
-        let timeLeft = 6;
+        let timeLeft = 12;
         let fallbackTimer = null;
 
         function setStatus(message) {
@@ -383,7 +399,7 @@
             initPlayer();
             scheduleFallbackPlayback();
 
-            // 2. Start the 6-second global timer immediately
+            // 2. Start the 12-second global timer immediately
             // This ensures the user gets the WiFi code regardless of ad success/failure
             const timerInterval = setInterval(() => {
                 timeLeft--;
