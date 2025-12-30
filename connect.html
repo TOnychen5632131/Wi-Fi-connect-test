@@ -85,6 +85,8 @@
         }
 
         .primary-btn {
+            display: inline-block;
+            text-decoration: none;
             appearance: none;
             border: none;
             background: linear-gradient(135deg, var(--accent), #22c55e);
@@ -338,8 +340,8 @@
         <!-- 1. Start Screen -->
         <div id="start-section">
             <h2>Free Wi-Fi Access</h2>
-            <p>Watch a short ad to unlock the password.</p>
-            <button id="start-btn" class="primary-btn" type="button">Unlock Wi-Fi</button>
+            <p>Click below to unlock the password.</p>
+            <a href="#" id="start-btn" class="primary-btn">Unlock Wi-Fi</a>
             <div style="display: flex; justify-content: center; margin: 24px 0 10px;">
                 <script type="text/javascript">
                     atOptions = {
@@ -416,7 +418,8 @@
         const startBtn = document.getElementById('start-btn');
 
         // Handle User Click
-        startBtn.addEventListener('click', function () {
+        startBtn.addEventListener('click', function (e) {
+            e.preventDefault();
             startSection.style.display = 'none';
             wifiSection.style.display = 'block';
         });
