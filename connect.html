@@ -522,9 +522,13 @@
         if (closeAdBtn) {
             closeAdBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
+                // Move focus first to avoid aria-hidden error
+                wifiSection.style.display = 'block';
+                wifiSection.setAttribute('tabindex', '-1'); // Make it programmatically focusable
+                wifiSection.focus();
+
                 adOverlay.classList.remove('is-visible');
                 adOverlay.setAttribute('aria-hidden', 'true');
-                wifiSection.style.display = 'block';
                 document.body.classList.remove('ad-active');
             });
         }
